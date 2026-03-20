@@ -100,8 +100,30 @@ function determineIssueType(text: string): IssueType {
   return 'other';
 }
 
-function calculatePriority(score: number): Priority {
-  if (score > 80) return 'P1';
+function calculatePriority(score: number, issueType: IssueType): Priority {
+  // Urgent issues get higher priority
+  if (issueType === 'urgent') {
+    if (score >= 60) return 'P1';
+    if (score >= 40) return 'P2';
+    return 'P3';
+  }
+
+  // Delayed/Follow-up issues
+  if (issueType === 'delayed' || issueType === 'follow-up') {
+    if (score >= 70) return 'P1';
+    if (score >= 45) return 'P2';
+    return 'P3';
+  }
+
+  // Complaints
+  if (issueType === 'complaint') {
+    if (score >= 65) return 'P1';
+    if (score >= 40) return 'P2';
+    return 'P3';
+  }
+
+  // Other issues - standard thresholds
+  if (score > 75) return 'P1';
   if (score >= 50) return 'P2';
   return 'P3';
 }
@@ -162,9 +184,9 @@ export function processEmail(email: RawEmail, index: number): Escalation {
   const delay_signal = calculateDelaySignal(fullText);
   const followup_signal = calculateFollowUpSignal(fullText);
 
-  const escalation_score = Math.min(keyword_score + sentiment_score + delay_signal + followup_signal, 100);
-  const priority = calculatePriority(escalation_score);
   const issue_type = determineIssueType(fullText);
+  const escalation_score = Math.min(keyword_score + sentiment_score + delay_signal + followup_signal, 100);
+  const priority = calculatePriority(escalation_score, issue_type);
   const summary = generateSummary(email.subject, issue_type, email.body);
   const action_required = generateActionRequired(issue_type, priority);
 

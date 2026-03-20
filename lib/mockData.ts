@@ -1,6 +1,31 @@
 import { Escalation } from './types';
 
-export const mockEscalations: Escalation[] = [
+// Priority calculation logic (same as escalationEngine)
+function calculatePriorityForMock(score: number, issueType: string): 'P1' | 'P2' | 'P3' {
+  if (issueType === 'urgent') {
+    if (score >= 60) return 'P1';
+    if (score >= 40) return 'P2';
+    return 'P3';
+  }
+
+  if (issueType === 'delayed' || issueType === 'follow-up') {
+    if (score >= 70) return 'P1';
+    if (score >= 45) return 'P2';
+    return 'P3';
+  }
+
+  if (issueType === 'complaint') {
+    if (score >= 65) return 'P1';
+    if (score >= 40) return 'P2';
+    return 'P3';
+  }
+
+  if (score > 75) return 'P1';
+  if (score >= 50) return 'P2';
+  return 'P3';
+}
+
+const mockEscalationsData = [
   {
     id: 'MOCK-001',
     subject: 'Payment processing failed - Urgent',
@@ -244,3 +269,11 @@ export const mockEscalations: Escalation[] = [
     resolved_at: '2025-03-15T14:15:00Z',
   },
 ];
+
+// Recalculate priorities based on improved logic
+export const mockEscalations: Escalation[] = mockEscalationsData.map((esc) => {
+  return {
+    ...esc,
+    priority: calculatePriorityForMock(esc.escalation_score, esc.issue_type),
+  } as Escalation;
+});

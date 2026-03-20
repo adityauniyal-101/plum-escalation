@@ -1,5 +1,5 @@
 import { Escalation } from '@/lib/types';
-import { getPriorityColor } from '@/lib/utils';
+import { getPriorityColor, getStatusColor } from '@/lib/utils';
 
 interface NeedsAttentionProps {
   escalations: Escalation[];
@@ -35,7 +35,9 @@ export default function NeedsAttention({ escalations }: NeedsAttentionProps) {
               <tr className="border-b-2 border-gray-200">
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Account Name</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Issue Summary</th>
-                <th className="text-right px-4 py-3 font-bold text-gray-700">Time Remaining</th>
+                <th className="text-center px-4 py-3 font-bold text-gray-700">Priority</th>
+                <th className="text-center px-4 py-3 font-bold text-gray-700">Status</th>
+                <th className="text-right px-4 py-3 font-bold text-gray-700">TAT</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -49,6 +51,16 @@ export default function NeedsAttention({ escalations }: NeedsAttentionProps) {
                   <td className="px-4 py-4">
                     <div className="text-gray-900 font-semibold">{esc.summary}</div>
                     <div className="text-xs text-gray-600 mt-2 font-medium">{esc.action_required}</div>
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${getPriorityColor(esc.priority)}`}>
+                      {esc.priority}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${getStatusColor(esc.status)}`}>
+                      {esc.status}
+                    </span>
                   </td>
                   <td className="px-4 py-4 text-right">
                     <div className="font-bold text-lg text-gray-900">{getTimeRemaining(esc.tat_hours, esc.created_at)}</div>
