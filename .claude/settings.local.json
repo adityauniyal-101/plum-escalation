@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -F file=@example.csv http://localhost:3000/api/upload)",
+      "Bash(curl -s -F \"file=@example.csv\" http://localhost:3000/api/upload)",
+      "Bash(npm run:*)",
+      "Read(//c/Users/ADITYA/Desktop/plum-escalations/**)",
+      "Bash(find . -maxdepth 2 -type f -not -path */node_modules/* -not -path */.next/* -not -path */.git/*)",
+      "Bash(head -30 __NEW_LINE_550f7412841f579a__ echo \"\" echo \"TECH STACK:\" echo \"✓ Next.js 15 \\(App Router\\)\" echo \"✓ TypeScript 5\" echo \"✓ Tailwind CSS 3.4\" echo \"✓ React 19\" echo \"\" echo \"KEY FILES:\" echo \"✓ app/page.tsx - Dashboard with KPIs\" echo \"✓ app/escalations/page.tsx - Table with filtering\" echo \"✓ app/api/upload/route.ts - CSV processing API\" echo \"✓ lib/escalationEngine.ts - Scoring logic\" echo \"✓ lib/parser.ts - CSV parsing\" echo \"✓ components/ - Reusable UI components\" echo \"\" echo \"BUILD STATUS:\" npm run build)",
+      "Bash(curl -s -I http://localhost:3000)",
+      "Bash(curl -s -F \"file=@example.csv\" http://localhost:3001/api/upload)",
+      "Bash(curl -s http://localhost:3001)",
+      "Bash(curl -s -F \"file=@example.csv\" http://localhost:3003/api/upload)",
+      "Bash(curl -s -F \"file=@example.csv\" http://localhost:3004/api/upload)",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s http://localhost:3008)",
+      "Bash(curl -s http://localhost:3009/login)",
+      "Bash(curl -s http://localhost:3010/login)",
+      "Bash(curl -s -I http://localhost:3000/login)",
+      "Bash(curl -s http://localhost:4000/login)",
+      "Bash(xargs kill:*)",
+      "Bash(pkill -f node.*next)",
+      "Bash(curl -s http://localhost:4000/api/upload -X POST)",
+      "Bash(pkill -9 -f node.*next)",
+      "Bash(curl -s http://localhost:4000/)",
+      "Bash(curl -s -X POST http://localhost:4000/api/upload)"
+    ]
+  }
+}

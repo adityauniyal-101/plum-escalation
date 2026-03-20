@@ -1,0 +1,11 @@
+subject,body,sent_at,sender,sender_name
+Urgent: Database Down,Our production database has been down for 3 hours. We need immediate escalation to the infrastructure team. This is critical.,2024-03-20T14:30:00Z,customer@acme.com,Acme Corporation
+Payment Processing Issue,The payment processing service failed this morning. We still waiting for a response from your team. Multiple customers complaining.,2024-03-20T13:15:00Z,support@retailer.com,Global Retailers Inc
+Follow up: Unresolved Issue,Hi team - following up on the issue I reported last week. It's still not resolved and is impacting our operations.,2024-03-20T12:00:00Z,admin@enterprise.com,Enterprise Solutions Ltd
+Late Delivery Status,Our shipment was supposed to arrive 5 days ago. We have no response from your support team. This is unacceptable.,2024-03-20T11:45:00Z,operations@logistics.com,Logistics Partners Co
+Minor Bug Report,Noticed a typo on the login page. Not urgent but wanted to let you know.,2024-03-20T10:30:00Z,feedback@user.com,Tech Startup Hub
+Complaint: Poor Customer Service,Your customer service is terrible. I've been on hold for 2 hours and no one has helped me. Very frustrated with your company.,2024-03-20T09:20:00Z,unhappy@customer.com,Fortune Finance Group
+Re: Account Access Problem,I'm writing again about the account access issue. Still unable to log in. This is blocking all my work.,2024-03-20T08:00:00Z,employee@company.com,Digital Commerce Solutions
+Production Error Alert,Error code 5XX appearing frequently in production. System is experiencing crashes. Please escalate to executive team immediately.,2024-03-19T23:45:00Z,devops@startup.com,CloudScale Technologies
+General Inquiry,Hi there - just wanted to know about your pricing plans for the enterprise tier.,2024-03-19T20:15:00Z,inquiry@newclient.com,Pioneer Holdings Inc
+Service Degradation,Your API has been slow all day. Response times are 10x normal. This is affecting our platform performance.,2024-03-19T18:30:00Z,tech@partner.com,Integration Partners LLC
