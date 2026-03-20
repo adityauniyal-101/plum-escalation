@@ -14,8 +14,8 @@ export default function Dashboard() {
   const [escalations, setEscalations] = useState<Escalation[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [dateRange, setDateRange] = useState({
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    end: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    end: new Date(),
   });
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [priorityFilter, setPriorityFilter] = useState<string>('All Priorities');
