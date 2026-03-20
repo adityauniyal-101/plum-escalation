@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent, DragEvent } from 'react';
 import { Escalation } from '@/lib/types';
 
 interface UploadCSVProps {
@@ -12,12 +12,49 @@ export default function UploadCSV({ onUpload }: UploadCSVProps) {
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [progress, setProgress] = useState<string>('');
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFileName(file.name);
       setError(null);
+    }
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.name.endsWith('.csv')) {
+      setFileName(file.name);
+      setError(null);
+      // Store the dropped file temporarily
+      if (typeof window !== 'undefined') {
+        try {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          const fileInput = document.querySelector('input[name="file"]') as HTMLInputElement;
+          if (fileInput) {
+            fileInput.files = dataTransfer.files;
+          }
+        } catch (err) {
+          // Fallback if DataTransfer is not available
+          console.warn('DataTransfer not available, file will be handled on submit');
+        }
+      }
+    } else if (file) {
+      setError('Please drop a CSV file');
     }
   };
 
@@ -76,64 +113,154 @@ export default function UploadCSV({ onUpload }: UploadCSVProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-lg font-semibold mb-4">Upload Escalations</h2>
+    <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 rounded-xl shadow-lg p-8 border border-blue-100">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+            <span className="text-xl">📤</span>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Upload Escalations</h2>
+            <p className="text-sm text-gray-600 mt-1">Import your CSV data to start monitoring</p>
+          </div>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Drag and Drop Zone */}
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`relative border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 ${
+            isDragging
+              ? 'border-blue-500 bg-blue-50 scale-105'
+              : fileName
+              ? 'border-green-300 bg-green-50'
+              : 'border-gray-300 bg-white hover:border-blue-400 hover:bg-blue-50'
+          }`}
+        >
           <input
             type="file"
             name="file"
             accept=".csv"
             onChange={handleFileChange}
             disabled={loading}
-            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+            className="sr-only"
+            id="file-input"
           />
-          {fileName && <p className="mt-2 text-sm text-gray-600">Selected: {fileName}</p>}
+          <label htmlFor="file-input" className="cursor-pointer block">
+            <div className={`text-4xl mb-3 transition-transform ${isDragging ? 'scale-125' : ''}`}>
+              {fileName ? '✅' : isDragging ? '⬇️' : '📁'}
+            </div>
+            {fileName ? (
+              <>
+                <p className="text-lg font-semibold text-green-700 mb-1">File ready to upload</p>
+                <p className="text-sm text-green-600">{fileName}</p>
+                <p className="text-xs text-gray-500 mt-3">Click or drag to change file</p>
+              </>
+            ) : (
+              <>
+                <p className="text-lg font-semibold text-gray-900 mb-2">
+                  {isDragging ? 'Drop your CSV file here' : 'Drag & drop your CSV file'}
+                </p>
+                <p className="text-sm text-gray-600 mb-4">or</p>
+                <span className="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                  Browse Files
+                </span>
+                <p className="text-xs text-gray-500 mt-4">CSV files only • Max 10MB</p>
+              </>
+            )}
+          </label>
         </div>
 
-        <div className="text-sm text-gray-600">
-          <p className="font-semibold mb-2">CSV must include columns:</p>
-          <ul className="list-disc list-inside space-y-1">
-            <li>subject</li>
-            <li>body</li>
-            <li>sent_at</li>
-            <li>sender (optional)</li>
-          </ul>
-        </div>
-
-        {/* Progress Message */}
-        {progress && (
-          <div className="bg-blue-50 text-blue-700 p-3 rounded text-sm animate-pulse">
-            {progress}
+        {/* Requirements Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <span className="text-lg">📋</span> Required Columns
+            </h3>
+            <ul className="space-y-2">
+              <li className="flex items-center gap-2 text-sm text-gray-700">
+                <span className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">1</span>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono">subject</code>
+              </li>
+              <li className="flex items-center gap-2 text-sm text-gray-700">
+                <span className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">2</span>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono">body</code>
+              </li>
+              <li className="flex items-center gap-2 text-sm text-gray-700">
+                <span className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">3</span>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono">sent_at</code>
+              </li>
+            </ul>
           </div>
-        )}
 
-        {/* Error Message */}
-        {error && <div className="bg-red-50 text-red-700 p-3 rounded text-sm">{error}</div>}
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <span className="text-lg">✨</span> Optional Column
+            </h3>
+            <ul className="space-y-2">
+              <li className="flex items-center gap-2 text-sm text-gray-700">
+                <span className="w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center text-xs font-bold text-amber-600">★</span>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono">sender</code>
+              </li>
+              <li className="text-xs text-gray-500 mt-3 pl-7">Email address or name of the escalation sender</li>
+            </ul>
+          </div>
+        </div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="bg-yellow-50 text-yellow-700 p-3 rounded text-sm">
-            <div className="flex items-center gap-2">
-              <div className="animate-spin h-4 w-4 border-2 border-yellow-600 border-t-transparent rounded-full" />
-              Processing your data... Please wait
+        {/* Status Messages */}
+        {progress && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-800 p-4 rounded-lg text-sm flex items-center gap-3 animate-pulse">
+            <div className="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full" />
+            <div>
+              <p className="font-semibold">{progress}</p>
             </div>
           </div>
         )}
 
+        {error && (
+          <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 text-red-800 p-4 rounded-lg text-sm flex items-start gap-3">
+            <span className="text-xl mt-0.5">⚠️</span>
+            <div>
+              <p className="font-semibold">Upload Error</p>
+              <p className="text-sm">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className={`w-full font-semibold py-2 px-4 rounded-lg transition-colors ${
+          className={`w-full py-3 px-6 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
             loading
-              ? 'bg-gray-400 text-white cursor-not-allowed opacity-50'
-              : 'bg-blue-600 hover:bg-blue-700 text-white'
+              ? 'bg-gray-400 text-white cursor-not-allowed opacity-60'
+              : fileName
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl scale-100 hover:scale-105'
+              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
           }`}
         >
-          {loading ? 'Processing...' : 'Upload & Process'}
+          {loading ? (
+            <>
+              <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+              Processing...
+            </>
+          ) : (
+            <>
+              <span className="text-lg">🚀</span>
+              Upload & Process
+            </>
+          )}
         </button>
       </form>
+
+      {/* Helper Text */}
+      <p className="text-xs text-gray-500 text-center mt-6">
+        💡 Tip: Make sure your CSV dates are in ISO format (YYYY-MM-DD) for best results
+      </p>
     </div>
   );
 }
