@@ -26,7 +26,16 @@
       "Bash(curl -s http://localhost:4000/api/upload -X POST)",
       "Bash(pkill -9 -f node.*next)",
       "Bash(curl -s http://localhost:4000/)",
-      "Bash(curl -s -X POST http://localhost:4000/api/upload)"
+      "Bash(curl -s -X POST http://localhost:4000/api/upload)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(node -e \":*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(curl -s http://localhost:3005)",
+      "Bash(git push:*)",
+      "Bash(grep -o \"Priority\\\\|Status\\\\|TAT\" .next/static/chunks/app/page-*.js)",
+      "Bash(git reset:*)",
+      "Bash(grep \"calculatePriority\\\\|P1.*P2.*P3\" .next/static/chunks/app/page-*.js)"
     ]
   }
 }

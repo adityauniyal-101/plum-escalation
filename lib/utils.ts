@@ -1,4 +1,51 @@
-import { Escalation, DashboardMetrics } from './types';
+import { Escalation, DashboardMetrics, IssueType, Priority } from './types';
+
+/**
+ * CRITICAL: Ensures an escalation ALWAYS has a valid priority.
+ * This is the root fix for missing priorities - used everywhere escalations are loaded.
+ */
+export function ensurePriority(escalation: Escalation): Escalation {
+  // If priority is missing, null, undefined, or empty string - calculate it
+  if (!escalation.priority) {
+    const calculated = calculatePriorityFromScores(
+      escalation.escalation_score,
+      escalation.issue_type
+    );
+    return {
+      ...escalation,
+      priority: calculated,
+    };
+  }
+  return escalation;
+}
+
+/**
+ * Calculates priority based on escalation score and issue type.
+ * Used by ensurePriority() to fill in missing priorities.
+ */
+function calculatePriorityFromScores(score: number, issueType: IssueType): Priority {
+  if (issueType === 'urgent') {
+    if (score >= 60) return 'P1';
+    if (score >= 40) return 'P2';
+    return 'P3';
+  }
+
+  if (issueType === 'delayed' || issueType === 'follow-up') {
+    if (score >= 70) return 'P1';
+    if (score >= 45) return 'P2';
+    return 'P3';
+  }
+
+  if (issueType === 'complaint') {
+    if (score >= 65) return 'P1';
+    if (score >= 40) return 'P2';
+    return 'P3';
+  }
+
+  if (score > 75) return 'P1';
+  if (score >= 50) return 'P2';
+  return 'P3';
+}
 
 export function calculateMetrics(escalations: Escalation[]): DashboardMetrics {
   const metrics: DashboardMetrics = {

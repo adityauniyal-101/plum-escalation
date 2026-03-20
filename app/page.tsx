@@ -1,39 +1,14 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Escalation, DashboardMetrics, IssueType, Priority } from '@/lib/types';
-import { calculateMetrics, getTopEscalations } from '@/lib/utils';
+import { Escalation, DashboardMetrics } from '@/lib/types';
+import { calculateMetrics, getTopEscalations, ensurePriority } from '@/lib/utils';
 import { mockEscalations } from '@/lib/mockData';
 import UploadCSV from '@/components/UploadCSV';
 import StatusCards from '@/components/StatusCards';
 import NeedsAttention from '@/components/NeedsAttention';
 import PerformanceCards from '@/components/PerformanceCards';
 import EscalationBreakdown from '@/components/EscalationBreakdown';
-
-// Priority calculation logic for backward compatibility
-function calculatePriorityForOldData(score: number, issueType: IssueType): Priority {
-  if (issueType === 'urgent') {
-    if (score >= 60) return 'P1';
-    if (score >= 40) return 'P2';
-    return 'P3';
-  }
-
-  if (issueType === 'delayed' || issueType === 'follow-up') {
-    if (score >= 70) return 'P1';
-    if (score >= 45) return 'P2';
-    return 'P3';
-  }
-
-  if (issueType === 'complaint') {
-    if (score >= 65) return 'P1';
-    if (score >= 40) return 'P2';
-    return 'P3';
-  }
-
-  if (score > 75) return 'P1';
-  if (score >= 50) return 'P2';
-  return 'P3';
-}
 
 export default function Dashboard() {
   const [escalations, setEscalations] = useState<Escalation[]>([]);
@@ -50,18 +25,8 @@ export default function Dashboard() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-
-        // Ensure all escalations have priority (for backward compatibility with old data)
-        const withPriorities = parsed.map((e: Escalation) => {
-          if (!e.priority) {
-            return {
-              ...e,
-              priority: calculatePriorityForOldData(e.escalation_score, e.issue_type),
-            };
-          }
-          return e;
-        });
-
+        // CRITICAL: Ensure ALL escalations have valid priorities
+        const withPriorities = parsed.map((e: Escalation) => ensurePriority(e));
         setEscalations(withPriorities);
       } catch (error) {
         console.error('Failed to load escalations:', error);
@@ -77,8 +42,10 @@ export default function Dashboard() {
   };
 
   const handleLoadMockData = () => {
-    setEscalations(mockEscalations);
-    localStorage.setItem('escalations', JSON.stringify(mockEscalations));
+    // CRITICAL: Ensure mock data has priorities
+    const mockWithPriorities = mockEscalations.map(e => ensurePriority(e));
+    setEscalations(mockWithPriorities);
+    localStorage.setItem('escalations', JSON.stringify(mockWithPriorities));
     setLastUpdated(new Date());
   };
 
