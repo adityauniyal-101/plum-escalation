@@ -123,9 +123,18 @@ export function getStatusColor(status: string): string {
   }
 }
 
-export function getTopEscalations(escalations: Escalation[], count: number = 5): Escalation[] {
-  return escalations
-    .filter((e) => e.priority === 'P1')
+export function getTopEscalations(escalations: Escalation[], count: number = 5, priorityFilter?: string): Escalation[] {
+  let filtered = escalations;
+
+  // If a specific priority filter is provided and it's not 'All Priorities', filter by it
+  if (priorityFilter && priorityFilter !== 'All Priorities') {
+    filtered = escalations.filter((e) => e.priority === priorityFilter);
+  } else {
+    // Default behavior: show all escalations
+    filtered = escalations;
+  }
+
+  return filtered
     .sort((a, b) => {
       if (a.status === b.status) {
         return b.escalation_score - a.escalation_score;

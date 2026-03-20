@@ -20,6 +20,14 @@ export default function Dashboard() {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [priorityFilter, setPriorityFilter] = useState<string>('All Priorities');
 
+  const handleDateChange = (type: 'start' | 'end', dateString: string) => {
+    const date = new Date(dateString);
+    setDateRange(prev => ({
+      ...prev,
+      [type]: date,
+    }));
+  };
+
   useEffect(() => {
     const stored = localStorage.getItem('escalations');
     if (stored) {
@@ -139,12 +147,21 @@ export default function Dashboard() {
               <div className="flex items-center gap-6">
                 <div>
                   <label className="text-xs font-semibold text-gray-700 block mb-2">Date Range</label>
-                  <input
-                    type="text"
-                    value={`${dateRange.start.toLocaleDateString()} – ${dateRange.end.toLocaleDateString()}`}
-                    readOnly
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-900 cursor-pointer font-medium"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      value={dateRange.start.toISOString().split('T')[0]}
+                      onChange={(e) => handleDateChange('start', e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 font-medium"
+                    />
+                    <span className="text-gray-500">–</span>
+                    <input
+                      type="date"
+                      value={dateRange.end.toISOString().split('T')[0]}
+                      onChange={(e) => handleDateChange('end', e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 font-medium"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-gray-700 block mb-2">Priority Filter</label>
@@ -177,7 +194,7 @@ export default function Dashboard() {
 
             {/* Center - Main Content */}
             <div className="col-span-7 space-y-6">
-              <NeedsAttention escalations={getTopEscalations(filteredData, 7)} />
+              <NeedsAttention escalations={getTopEscalations(filteredData, 7, priorityFilter)} />
               <EscalationBreakdown metrics={metrics} />
             </div>
 
