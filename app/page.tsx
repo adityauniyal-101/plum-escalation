@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Escalation, DashboardMetrics } from '@/lib/types';
 import { calculateMetrics, getTopEscalations } from '@/lib/utils';
+import { mockEscalations } from '@/lib/mockData';
 import UploadCSV from '@/components/UploadCSV';
 import StatusCards from '@/components/StatusCards';
 import NeedsAttention from '@/components/NeedsAttention';
@@ -34,6 +35,12 @@ export default function Dashboard() {
   const handleUpload = (newEscalations: Escalation[]) => {
     setEscalations(newEscalations);
     localStorage.setItem('escalations', JSON.stringify(newEscalations));
+    setLastUpdated(new Date());
+  };
+
+  const handleLoadMockData = () => {
+    setEscalations(mockEscalations);
+    localStorage.setItem('escalations', JSON.stringify(mockEscalations));
     setLastUpdated(new Date());
   };
 
@@ -75,10 +82,26 @@ export default function Dashboard() {
       {escalations.length === 0 ? (
         <div className="max-w-2xl mx-auto">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center mb-6">
-            <p className="text-blue-900 text-lg font-bold">Upload CSV to Get Started</p>
-            <p className="text-blue-700 mt-2 text-sm">Upload a CSV file with escalation data to begin monitoring</p>
+            <p className="text-blue-900 text-lg font-bold">Welcome to Escalation Monitor</p>
+            <p className="text-blue-700 mt-2 text-sm">Get started by uploading data or exploring with sample data</p>
           </div>
-          <UploadCSV onUpload={handleUpload} />
+
+          {/* Demo Button */}
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6 text-center mb-6">
+            <p className="text-purple-900 text-sm font-semibold mb-3">Want to see how it works?</p>
+            <button
+              onClick={handleLoadMockData}
+              className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors shadow-md"
+            >
+              ✨ Explore with Sample Data
+            </button>
+            <p className="text-purple-700 text-xs mt-3">Load realistic escalation examples to explore all features</p>
+          </div>
+
+          <div className="border-t-2 border-gray-200 pt-6">
+            <p className="text-gray-700 text-sm font-semibold mb-4 text-center">Or upload your own data</p>
+            <UploadCSV onUpload={handleUpload} />
+          </div>
         </div>
       ) : (
         <>
@@ -89,11 +112,20 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
                 <p className="text-gray-600 text-sm mt-1">Real-time escalation monitoring and insights</p>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <UploadCSV onUpload={handleUpload} />
                 <button className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-semibold transition">
                   ⬇️ Download Data
                 </button>
+                {mockEscalations.length > 0 && (
+                  <button
+                    onClick={handleLoadMockData}
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition text-sm"
+                    title="Reload sample data"
+                  >
+                    ✨ Sample Data
+                  </button>
+                )}
               </div>
             </div>
 
