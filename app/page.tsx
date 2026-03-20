@@ -55,6 +55,11 @@ export default function Dashboard() {
     setEscalations(mockWithPriorities);
     localStorage.setItem('escalations', JSON.stringify(mockWithPriorities));
     setLastUpdated(new Date());
+    // Reset dateRange to current time to ensure mock data is included in filtered results
+    setDateRange({
+      start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      end: new Date(),
+    });
   };
 
   const filteredByDate = useMemo(() => {
