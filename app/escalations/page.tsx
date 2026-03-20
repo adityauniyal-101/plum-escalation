@@ -1,10 +1,35 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Escalation, Priority, Status } from '@/lib/types';
+import { Escalation, Priority, Status, IssueType } from '@/lib/types';
 import EscalationTable from '@/components/EscalationTable';
 import Filters from '@/components/Filters';
 import Link from 'next/link';
+
+// Priority calculation logic for migration
+function calculatePriorityForMigration(score: number, issueType: IssueType): Priority {
+  if (issueType === 'urgent') {
+    if (score >= 60) return 'P1';
+    if (score >= 40) return 'P2';
+    return 'P3';
+  }
+
+  if (issueType === 'delayed' || issueType === 'follow-up') {
+    if (score >= 70) return 'P1';
+    if (score >= 45) return 'P2';
+    return 'P3';
+  }
+
+  if (issueType === 'complaint') {
+    if (score >= 65) return 'P1';
+    if (score >= 40) return 'P2';
+    return 'P3';
+  }
+
+  if (score > 75) return 'P1';
+  if (score >= 50) return 'P2';
+  return 'P3';
+}
 
 const ROWS_PER_PAGE = 50;
 
@@ -23,7 +48,19 @@ export default function EscalationsPage() {
       try {
         const parsed = JSON.parse(stored);
         console.log(`[Performance] Loaded ${parsed.length} escalations from localStorage`);
-        setEscalations(parsed);
+
+        // Ensure all escalations have priority (for backward compatibility with old data)
+        const withPriorities = parsed.map((e: Escalation) => {
+          if (!e.priority) {
+            return {
+              ...e,
+              priority: calculatePriorityForMigration(e.escalation_score, e.issue_type),
+            };
+          }
+          return e;
+        });
+
+        setEscalations(withPriorities);
       } catch (error) {
         console.error('Failed to load escalations:', error);
       }
