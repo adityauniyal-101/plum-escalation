@@ -53,8 +53,8 @@ export default function NeedsAttention({ escalations }: NeedsAttentionProps) {
                     <div className="text-xs text-gray-600 mt-2 font-medium">{esc.action_required}</div>
                   </td>
                   <td className="px-4 py-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${getPriorityColor(esc.priority)}`}>
-                      {esc.priority}
+                    <span className={`px-3 py-2 rounded-lg text-sm font-bold inline-block min-w-[60px] ${getPriorityColor(esc.priority)}`}>
+                      {esc.priority || 'N/A'}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-center">

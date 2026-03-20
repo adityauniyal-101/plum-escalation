@@ -100,13 +100,13 @@ export function formatDate(dateString: string): string {
 export function getPriorityColor(priority: string): string {
   switch (priority) {
     case 'P1':
-      return 'bg-p1 text-white';
+      return 'bg-red-600 text-white font-bold';
     case 'P2':
-      return 'bg-p2 text-white';
+      return 'bg-amber-500 text-white font-semibold';
     case 'P3':
-      return 'bg-p3 text-white';
+      return 'bg-green-600 text-white font-semibold';
     default:
-      return 'bg-gray-300 text-gray-900';
+      return 'bg-gray-400 text-white font-semibold';
   }
 }
 

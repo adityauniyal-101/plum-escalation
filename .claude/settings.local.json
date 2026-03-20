@@ -35,7 +35,10 @@
       "Bash(git push:*)",
       "Bash(grep -o \"Priority\\\\|Status\\\\|TAT\" .next/static/chunks/app/page-*.js)",
       "Bash(git reset:*)",
-      "Bash(grep \"calculatePriority\\\\|P1.*P2.*P3\" .next/static/chunks/app/page-*.js)"
+      "Bash(grep \"calculatePriority\\\\|P1.*P2.*P3\" .next/static/chunks/app/page-*.js)",
+      "Bash(grep -q \"ensurePriority\\\\|calculatePriorityFromScores\" .next/static/chunks/app/*.js)",
+      "Bash(kill 2273)",
+      "Bash(pkill -f \"next dev\")"
     ]
   }
 }

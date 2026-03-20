@@ -48,8 +48,8 @@ const TableRow = memo(function TableRow({
         )}
       </td>
       <td className="px-4 py-3">
-        <span className={`px-2 py-1 rounded text-xs font-semibold ${getPriorityColor(escalation.priority)}`}>
-          {escalation.priority}
+        <span className={`px-3 py-2 rounded-lg text-sm font-bold inline-block min-w-[60px] text-center ${getPriorityColor(escalation.priority)}`}>
+          {escalation.priority || 'N/A'}
         </span>
       </td>
       <td className="px-4 py-3">
